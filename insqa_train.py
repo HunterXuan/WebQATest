@@ -8,6 +8,7 @@ import datetime
 import data_helpers
 from insqa_cnn import InsQACNN
 import operator
+import random
 
 #print tf.__version__
 
@@ -140,7 +141,8 @@ with tf.Graph().as_default():
           scoreList = []
           i = int(0)
           while True:
-              x_test_1, x_test_2, x_test_3 = data_helpers.load_test_set(vocab, test_data, i, FLAGS.batch_size)
+              qid = random.randint(0, len(train_data) - 1)
+              x_test_1, x_test_2, x_test_3 = data_helpers.load_test_set(vocab, test_data, qid, FLAGS.batch_size)
               feed_dict = {
                 cnn.input_x_1: x_test_1,
                 cnn.input_x_2: x_test_2,
@@ -151,16 +153,16 @@ with tf.Graph().as_default():
               for score in batch_scores[0]:
                   scoreList.append(score)
               i += 1
-              if i >= len(train_data):
+              if i >= (len(train_data) / 50):
                   break
           sessdict = {}
-          index = int(0)
-          for qid in range(0, len(train_data) - 1):
-              if not qid in sessdict:
-                  sessdict[qid] = []
-              sessdict[qid].append((scoreList[qid * FLAGS.batch_size], 1))
-              for i in range(1, FLAGS.batch_size):
-                  sessdict[qid].append((scoreList[qid * FLAGS.batch_size + i], 0))
+
+          for index in range(0, i):
+              if not index in sessdict:
+                  sessdict[index] = []
+              sessdict[index].append((scoreList[index * FLAGS.batch_size], 1))
+              for j in range(1, FLAGS.batch_size):
+                  sessdict[index].append((scoreList[index * FLAGS.batch_size + j], 0))
 
           lev1 = float(0)
           lev0 = float(0)
