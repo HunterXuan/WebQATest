@@ -170,9 +170,9 @@ with tf.Graph().as_default():
           for k, v in sessdict.items():
               v.sort(key=operator.itemgetter(0), reverse=True)
               score, flag = v[0]
-              if flag == '1':
+              if flag == 1:
                   lev1 += 1
-              if flag == '0':
+              if flag == 0:
                   lev0 += 1
           of.write('lev1:' + str(lev1) + '\n')
           of.write('lev0:' + str(lev0) + '\n')
